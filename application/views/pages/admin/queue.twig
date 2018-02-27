@@ -1,0 +1,71 @@
+{#
+	CoderzWar
+	Author : Atiab Jobayer <atiab@coderzwar.com>
+#}
+{% set selected = '' %}
+{% extends 'templates/base.twig' %}
+{% block icon %}fa-play{% endblock %}
+{% block title %}Submission Queue{% endblock %}
+{% block head_title %}Submission Queue{% endblock %}
+
+
+
+{% block body_end %}
+<script>
+	$(document).ready(function(){
+		$(".shj_act").click(function(){
+			var action=$(this).attr('id');
+			$.post(
+					'{{ site_url('queue') }}/'+action,
+					{wcj_csrf_name: shj.csrf_token},
+					function(data){
+						if (data=='success')
+							location.reload();
+					}
+			);
+		});
+	});
+</script>
+{% endblock %}
+
+
+
+{% block main_content %}
+	<div class="col-12">
+		<p>
+			{% if working %}
+				<i class="fa fa-play fa-lg color6"></i> Queue is working
+			{% else %}
+				<i class="fa fa-pause fa-lg color10"></i> Queue is not working
+			{% endif %}
+			| Total submissions in queue: {{ queue|length }}
+		</p>
+		<p>
+			<a href="#" class="shj_act" id="pause"><i class="fa fa-pause"></i> Pause</a> |
+			<a href="#" class="shj_act" id="resume"><i class="fa fa-play"></i> Resume</a> |
+			<a href="#" class="shj_act" id="empty_queue"><i class="fa fa-times-circle"></i> Empty Queue</a>
+		</p>
+		<table class="sharif_table">
+			<thead>
+			<tr>
+				<th>#</th>
+				<th>Submit ID</th>
+				<th>Usename</th>
+				<th>Assignment</th>
+				<th>Problem</th>
+				<th>Type (judge/rejudge)</th>
+			</tr>
+			</thead>
+			{% for item in queue %}
+				<tr>
+					<td>{{ loop.index }}</td>
+					<td>{{ item.submit_id }}</td>
+					<td>{{ item.username }}</td>
+					<td>{{ item.assignment }} (<span dir="auto">{{ all_assignments[item.assignment].name }}</span>)</td>
+					<td>{{ item.problem }}</td>
+					<td>{{ item.type }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+{% endblock %}  {# main_content #}
